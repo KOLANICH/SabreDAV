@@ -29,16 +29,16 @@ class Client {
      *
      * @var array
      */
-	static $defaultCurlSettings=array(
-		CURLOPT_RETURNTRANSFER => true,
-		// Return headers as part of the response
-		CURLOPT_HEADER => true,
-		// Automatically follow redirects
-		CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_MAXREDIRS => 5,
-		/*CURLOPT_SSL_VERIFYHOST =>0,
-		CURLOPT_SSL_VERIFYPEER =>0,*/
-	);
+    static $defaultCurlSettings=array(
+        CURLOPT_RETURNTRANSFER => true,
+        // Return headers as part of the response
+        CURLOPT_HEADER => true,
+        // Automatically follow redirects
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 5,
+        /*CURLOPT_SSL_VERIFYHOST =>0,
+        CURLOPT_SSL_VERIFYPEER =>0,*/
+    );
     public $propertyMap = array();
 
     protected $baseUri;
@@ -76,10 +76,10 @@ class Client {
      * Sends all encoding headers.
      */
     const ENCODING_ALL = 0b111;
-	
-	 /**
-	 * Default encoding.
-	 */
+    
+     /**
+     * Default encoding.
+     */
     const ENCODING_DEFAULT = self::ENCODING_IDENTITY;
 
 
@@ -153,36 +153,36 @@ class Client {
         
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre\\DAV\\Property\\ResourceType';
-		
-		static::initCurl($settings['curl']);
-		
-		if (isset($settings['encoding'])) {
-			static::setEncodings($settings['encoding']);
+        
+        static::initCurl($settings['curl']);
+        
+        if (isset($settings['encoding'])) {
+            static::setEncodings($settings['encoding']);
         }else{
-			static::setEncodings(self::ENCODING_DEFAULT);
-		}
-		
-		if (isset($settings['proxy'])) {
-			static::setProxy($settings['proxy']);
+            static::setEncodings(self::ENCODING_DEFAULT);
+        }
+        
+        if (isset($settings['proxy'])) {
+            static::setProxy($settings['proxy']);
         }
     }
-	public function __destruct() {
-		if($this->ch)curl_close($this->ch);
+    public function __destruct() {
+        if($this->ch)curl_close($this->ch);
     }
-	
-	protected function initCurl(&$settings=null){
-		$this->ch=curl_init();
-		if (!$this->ch) {
+    
+    protected function initCurl(&$settings=null){
+        $this->ch=curl_init();
+        if (!$this->ch) {
             throw new Sabre_DAV_Exception('[CURL] unable to initialize curl handle');
         }
-		$curlSettings = static::$defaultCurlSettings;
-		if (isset($settings)&&is_array($settings)){
-			$curlSettings+=$settings;
-			unset($settings);
-		}
-		curl_setopt_array($this->ch, $curlSettings);
-		unset($curlSettings);
-	}
+        $curlSettings = static::$defaultCurlSettings;
+        if (isset($settings)&&is_array($settings)){
+            $curlSettings+=$settings;
+            unset($settings);
+        }
+        curl_setopt_array($this->ch, $curlSettings);
+        unset($curlSettings);
+    }
 
     /**
      * Add trusted root certificates to the webdav client.
@@ -190,24 +190,24 @@ class Client {
      * @param string $certificatesPath absolute path to a file which contains all trusted certificates
      */
     public function addTrustedCertificates($certificatesPath) {
-		if(is_string($certificatesPath)){
-			if(!file_exists($certificatesPath))throw new Exception('certificates path is not valid');
+        if(is_string($certificatesPath)){
+            if(!file_exists($certificatesPath))throw new Exception('certificates path is not valid');
             static::setCertificates($certificatesPath);
         }else{
-			throw new Exception('$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
-		}
+            throw new Exception('$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
+        }
     }
-	
-	 /**
+    
+     /**
      * Used to set certificates file.
-	 * Not for direct usage because addTrustedCertificates checks wheither file exist in call time but
+     * Not for direct usage because addTrustedCertificates checks wheither file exist in call time but
      * this function will make this check this requirement during executing curl request
-	 *
+     *
      * @param string $certificatesPath
      */
-	protected function setCertificates($certificatesPath){
-		curl_setopt($this->ch,CURLOPT_CAINFO,$certificatesPath);
-	}
+    protected function setCertificates($certificatesPath){
+        curl_setopt($this->ch,CURLOPT_CAINFO,$certificatesPath);
+    }
 
     /**
      * Enables/disables SSL peer verification
@@ -217,44 +217,44 @@ class Client {
     public function setVerifyPeer($shouldVerifyPeer){
         curl_setopt($this->ch,CURLOPT_SSL_VERIFYPEER,$shouldVerifyPeer);
     }
-	
-	/**
-	 * Used to set proxy
-	 *	
-	 * @param string $proxyAddr address of proxy in format host:port
-	 */
-	public function setProxy($proxyAddr) {
+    
+    /**
+     * Used to set proxy
+     *	
+     * @param string $proxyAddr address of proxy in format host:port
+     */
+    public function setProxy($proxyAddr) {
         curl_setopt($this->ch,CURLOPT_PROXY,$proxyAddr);
     }
-	
-	/** converts
-	 * @param number $encodings bitwise OR of needed ENCODING_* constants of this class
-	 * to format, suitable for CURL
-	 */
-	protected function convertEncodingsToInnerFormat(&$encodings){
-		$encodingsList = [];
-		if ($encodings & self::ENCODING_IDENTITY) {
-			$encodingsList[] = 'identity';
-		}
-		if ($encodings & self::ENCODING_DEFLATE) {
-			$encodingsList[] = 'deflate';
-		}
-		if ($encodings & self::ENCODING_GZIP) {
-			$encodingsList[] = 'gzip';
-		}
-		return implode(',', $encodingsList);
-	}
-	
-	
-	/**
-	 * Used to set enconings
-	 *	
-	 * @param integer $encodings  bitwise OR of needed ENCODING_* constants of this class
-	 */
-	public function setEncodings($encodings=self::ENCODING_DEFAULT){
-		curl_setopt($this->ch,CURLOPT_ENCODING,static::convertEncodingsToInnerFormat($encodings));
-	}
-	
+    
+    /** converts
+     * @param number $encodings bitwise OR of needed ENCODING_* constants of this class
+     * to format, suitable for CURL
+     */
+    protected function convertEncodingsToInnerFormat(&$encodings){
+        $encodingsList = [];
+        if ($encodings & self::ENCODING_IDENTITY) {
+            $encodingsList[] = 'identity';
+        }
+        if ($encodings & self::ENCODING_DEFLATE) {
+            $encodingsList[] = 'deflate';
+        }
+        if ($encodings & self::ENCODING_GZIP) {
+            $encodingsList[] = 'gzip';
+        }
+        return implode(',', $encodingsList);
+    }
+    
+    
+    /**
+     * Used to set enconings
+     *	
+     * @param integer $encodings  bitwise OR of needed ENCODING_* constants of this class
+     */
+    public function setEncodings($encodings=self::ENCODING_DEFAULT){
+        curl_setopt($this->ch,CURLOPT_ENCODING,static::convertEncodingsToInnerFormat($encodings));
+    }
+    
     /**
      * Does a PROPFIND request
      *
@@ -560,38 +560,38 @@ class Client {
         return $response;
 
     }
-	
-	 /**
+    
+     /**
      * Puts a file or buffer to server.
-	 * If you wanna put a file, $mode must be 0 (it is by default), $file should contain filename.
+     * If you wanna put a file, $mode must be 0 (it is by default), $file should contain filename.
      * If you wanna put a binary string, you must set $mode into 1 and $remoteName also must be set
      * @param string $url
      * @param string $file
-	 * @param string $remoteName
-	 * @param integer $mode
+     * @param string $remoteName
+     * @param integer $mode
      * @return array
      */
-	public function put($file, $url='/', $remoteName='', $mode=0){
-		switch ($mode){
-			case 0:
-				if(!file_exists($file)){
-					throw new Exception('Upload Error : file ' . $file . ' doesnt exist');
-				}
-				if(!$remoteName)$remoteName=basename($file);
-				//new dBug($url.$remoteName);
-				return $this->request('PUT', $url.$remoteName, array("file"=>'@'.$file));
-			break;
-			case 1:
-				if(!$remoteName)throw new Exception('You MUST specify $remoteName if you upload blob');
-				//new dBug($url.$remoteName);
-				return $this->request('PUT', $url.$remoteName, $file);
-			break;
-			default:
-				throw new Exception('Bad mode value');
-			break;
-		}
-	}
-	
+    public function put($file, $url='/', $remoteName='', $mode=0){
+        switch ($mode){
+            case 0:
+                if(!file_exists($file)){
+                    throw new Exception('Upload Error : file ' . $file . ' doesnt exist');
+                }
+                if(!$remoteName)$remoteName=basename($file);
+                //new dBug($url.$remoteName);
+                return $this->request('PUT', $url.$remoteName, array("file"=>'@'.$file));
+            break;
+            case 1:
+                if(!$remoteName)throw new Exception('You MUST specify $remoteName if you upload blob');
+                //new dBug($url.$remoteName);
+                return $this->request('PUT', $url.$remoteName, $file);
+            break;
+            default:
+                throw new Exception('Bad mode value');
+            break;
+        }
+    }
+    
     /**
      * Wrapper for all curl functions.
      *
