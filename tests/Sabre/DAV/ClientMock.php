@@ -27,20 +27,16 @@ class ClientMock extends Client {
         return $this->response;
     }
     
-    public function setVerifyPeer($shouldVerifyPeer){
-        $this->curlSettings[CURLOPT_SSL_VERIFYPEER]=$shouldVerifyPeer;
-    }
     
-    public function setEncodings($encodings=self::ENCODING_DEFAULT){
-        $this->curlSettings[CURLOPT_ENCODING]=static::convertEncodingsToInnerFormat($encodings);
-    }
-    
-    public function setProxy($proxyAddr) {
-        $this->curlSettings[CURLOPT_PROXY]=$proxyAddr;
-    }
-    
-    public function setCertificates($certificatesPath){
-        $this->curlSettings[CURLOPT_CAINFO]=$certificatesPath;
+    /*
+     * Used to set opts to "cURL "
+     * @param integer $opt curl constant for option
+     * @param mixed $val value
+     * @returns true
+     */
+    protected function curlSetOpt($opt,$val){
+        $this->curlSettings[$opt]=$val;
+        return true;
     }
 
     /**
